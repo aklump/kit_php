@@ -1,4 +1,4 @@
 name = "CodeKit PHP"
-description = "Parsing of the CodeKit language for PHP"
+description = "PHP classes for compiling CodeKit .kit files."
 version = 0.0.1
 author = Aaron Klump <sourcecode@intheloftstudios.com>

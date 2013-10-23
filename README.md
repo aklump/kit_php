@@ -1,3 +1,9 @@
+## Usage
+To compile all `.kit` files in a directory, use the following snippet of code:
+
+    $obj = new Compiler('kit', 'html');
+    $obj->apply();
+
 ##Contact
 * **In the Loft Studios**
 * Aaron Klump - Developer
