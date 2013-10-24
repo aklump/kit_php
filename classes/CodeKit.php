@@ -49,7 +49,7 @@ abstract class CodeKit implements CodeKitInterface {
    * @param type $source
    *   (Optional) Defaults to NULL.
    */
-  public function __construct($source = NULL, $is_file = FALSE) {
+  public function __construct($source = NULL, $is_file = TRUE) {
     if ($source !== NULL) {
       if ($is_file && file_exists($source)) {
         $this->setSource(file_get_contents($source));

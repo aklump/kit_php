@@ -9,6 +9,7 @@
 require_once '../vendor/autoload.php';
 require_once 'CodeKitTestCase.php';
 require_once '../classes/CodeKit.php';
+require_once '../classes/Imports.php';
 require_once '../classes/Compiler.php';
 use aklump\codekit_php\Compiler;
 
@@ -97,7 +98,11 @@ EOD;
     $this->writeFile('', 'bogus.html', $this->paths['source']);
 
     // Extract the files
-    $control = array('body.kit', 'content.kit', 'page.kit');
+    $control = array(
+      'body.kit'    => $this->paths['source'] . '/body.kit',
+      'content.kit' => $this->paths['source'] . '/content.kit',
+      'page.kit'    => $this->paths['source'] . '/page.kit',
+    );
     $this->assertEquals($control, $obj->getKitFiles());
 
     // Apply and check result
@@ -121,7 +126,21 @@ EOD;
     }
     $this->assertEmpty($orphans);
 
+    // Make sure the output files have .html extensions not .kit
+    $files = scandir($this->paths['output']);
+    $control = array('.', '..', 'page.html');
+    $this->assertEquals($control, $files);
+  }
 
+  public function testRelativeDirs() {
+    // Create three files in different dirs
+    $index = $this->writeFile('<index><!-- @include ../core/tpl/header.kit --></index>', 'index.kit', 'kit');
+    $header = $this->writeFile('<header><!-- @include nav.kit --></header>', 'header.kit', 'core/tpl');
+    $nav = $this->writeFile('<nav>Here is the Navigation</nav>', 'nav.kit', 'core/tpl');
+
+    $obj = new Compiler($this->getTempDir() . '/kit', $this->getTempDir() . '/public_html');
+    $obj->apply();
+    $this->assertEquals('<index><header><nav>Here is the Navigation</nav></header></index>', $obj->apply());
   }
 }
 
