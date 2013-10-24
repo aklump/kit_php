@@ -3,15 +3,15 @@
  * @file
  * Defines the Imports Class
  *
- * @ingroup codekit_php
+ * @ingroup kit_php
  * @{
  */
-namespace aklump\codekit_php;
+namespace aklump\kit_php;
 
 /**
  * Interface ImportsInterface
  */
-interface ImportsInterface extends CodeKitInterface {
+interface ImportsInterface extends KitInterface {
 
   /**
    * Return the working directory of the source file
@@ -35,13 +35,22 @@ interface ImportsInterface extends CodeKitInterface {
    * @return array
    */
   public function getImports();
+
+  /**
+   * Extract all import declarations from a string
+   *
+   * @param string $string
+   *
+   * @return array
+   */
+  public function extract($string);
 }
 
 
 /**
  * Class Imports
  */
-class Imports extends CodeKit implements ImportsInterface {
+class Imports extends Kit implements ImportsInterface {
   protected $dirname, $imports, $result;
 
   /**
@@ -62,13 +71,6 @@ class Imports extends CodeKit implements ImportsInterface {
     $this->imports = array();
   }
 
-  /**
-   * Extract all import declarations from a string
-   *
-   * @param string $string
-   *
-   * @return array
-   */
   public function extract($string) {
     preg_match_all('/<!--\s*(?:@import|@include) [\'"]*([^"]*?)[\'"]*\s*-->/', $string, $matches);
     $extracted = array();
@@ -162,4 +164,4 @@ class Imports extends CodeKit implements ImportsInterface {
   }
 }
 
-/** @} */ //end of group: codekit_php
+/** @} */ //end of group: kit_php

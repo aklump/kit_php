@@ -3,17 +3,17 @@
  * @file
  * Tests for the CodeKitCompiler class
  *
- * @ingroup codekit_php
+ * @ingroup kit_php
  * @{
  */
 require_once '../vendor/autoload.php';
-require_once 'CodeKitTestCase.php';
-require_once '../classes/CodeKit.php';
+require_once 'KitTestCase.php';
+require_once '../classes/Kit.php';
 require_once '../classes/Imports.php';
 require_once '../classes/Compiler.php';
-use aklump\codekit_php\Compiler;
+use aklump\kit_php\Compiler;
 
-class CompilerTest extends CodeKitTestCaseTest {
+class CompilerTest extends KitTestCaseTest {
 
   public function testDirectories() {
     $this->paths[] = $source = $this->getTempDir() . '/ck_source';
@@ -27,7 +27,7 @@ class CompilerTest extends CodeKitTestCaseTest {
     $obj = new Compiler;
     $dir = $this->getTempDir();
     $return = $obj->setSourceDirectory($dir);
-    $this->assertInstanceOf('aklump\codekit_php\Compiler', $return);
+    $this->assertInstanceOf('aklump\kit_php\Compiler', $return);
     $this->assertEquals($dir, $obj->getSourceDirectory());
 
     // Assert bad directory, no create returns empty
@@ -46,7 +46,7 @@ class CompilerTest extends CodeKitTestCaseTest {
     $obj = new Compiler;
     $dir = $this->getTempDir();
     $return = $obj->setOutputDirectory($dir);
-    $this->assertInstanceOf('aklump\codekit_php\Compiler', $return);
+    $this->assertInstanceOf('aklump\kit_php\Compiler', $return);
     $this->assertEquals($dir, $obj->getOutputDirectory());
 
     // Assert bad directory, no create returns empty
@@ -163,4 +163,4 @@ EOD;
   }
 }
 
-/** @} */ //end of group: codekit_php
+/** @} */ //end of group: kit_php

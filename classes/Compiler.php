@@ -3,15 +3,15 @@
  * @file
  * Defines the Compiler class
  *
- * @ingroup codekit_php
+ * @ingroup kit_php
  * @{
  */
-namespace aklump\codekit_php;
+namespace aklump\kit_php;
 
 /**
  * Interface CompilerInterface
  */
-interface CompilerInterface extends CodeKitInterface {
+interface CompilerInterface extends KitInterface {
   public function setSourceDirectory($directory);
   public function getSourceDirectory();
   public function setOutputDirectory($directory);
@@ -30,7 +30,7 @@ interface CompilerInterface extends CodeKitInterface {
 /**
  * Class Compiler
  */
-class Compiler extends CodeKit implements CompilerInterface {
+class Compiler extends Kit implements CompilerInterface {
 
   protected $source_dir, $output_dir, $imports, $kit_files;
 
@@ -177,4 +177,4 @@ class Compiler extends CodeKit implements CompilerInterface {
 
 
 
-/** @} */ //end of group: codekit_php
+/** @} */ //end of group: kit_php

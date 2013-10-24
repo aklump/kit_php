@@ -1,17 +1,17 @@
 <?php
 /**
  * @file
- * Defines the abstract CodeKit class
+ * Defines the abstract Kit class
  *
- * @ingroup codekit_php
+ * @ingroup kit_php
  * @{
  */
-namespace aklump\codekit_php;
+namespace aklump\kit_php;
 
 /**
- * Interface CodeKitInterface
+ * Interface KitInterface
  */
-interface CodeKitInterface {
+interface KitInterface {
   /**
    * Set the source code
    *
@@ -37,9 +37,9 @@ interface CodeKitInterface {
 }
 
 /**
- * Class CodeKit
+ * Class Kit
  */
-abstract class CodeKit implements CodeKitInterface {
+abstract class Kit implements KitInterface {
 
   protected $source;
 
@@ -75,4 +75,4 @@ abstract class CodeKit implements CodeKitInterface {
   abstract function apply();
 }
 
-/** @} */ //end of group: codekit_php
+/** @} */ //end of group: kit_php

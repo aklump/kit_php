@@ -1,8 +1,24 @@
+## Summary
+A PHP implementation to parse [the Kit language](http://incident57.com/codekit/kit.php) by Bryan Jones.
+
 ## Usage
-To compile all `.kit` files in a directory, use the following snippet of code:
+To compile all `.kit` files in a directory, use the following snippet of code as a starting point.  Refer to the class documentation for more info.  The first argument is the source directory to look for `.kit` files and the second argument is the output directory.
 
     $obj = new Compiler('kit', 'html');
     $obj->apply();
+    
+## Testing
+PHPUnit tests are provided.
+
+    Aaron-Klumps-MacBook-Pro:kit_php aklump$ cd tests
+    Aaron-Klumps-MacBook-Pro:tests aklump$ phpunit .
+    PHPUnit 3.7.28 by Sebastian Bergmann.
+    
+    ..........
+    
+    Time: 24 ms, Memory: 9.50Mb
+    
+    OK (10 tests, 46 assertions)
 
 ##Contact
 * **In the Loft Studios**
