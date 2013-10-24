@@ -3,16 +3,16 @@
  * @file
  * Tests for the Imports class
  *
- * @ingroup codekit_php
+ * @ingroup kit_php
  * @{
  */
 require_once '../vendor/autoload.php';
-require_once 'CodeKitTestCase.php';
-require_once '../classes/CodeKit.php';
+require_once 'KitTestCase.php';
+require_once '../classes/Kit.php';
 require_once '../classes/Imports.php';
-use aklump\codekit_php\Imports;
+use aklump\kit_php\Imports;
 
-class ImportsTest extends CodeKitTestCaseTest {
+class ImportsTest extends KitTestCaseTest {
   public function testExtract() {
     $variants = array(
       array('<!-- @import "someFile.kit" -->', 'someFile.kit'),
@@ -89,4 +89,4 @@ EOD;
   }
 }
 
-/** @} */ //end of group: codekit_php
+/** @} */ //end of group: kit_php

@@ -1,9 +1,9 @@
 {
-  "name": "aklump/codekit_php",
+  "name": "aklump/kit_php",
   "type": "library",
-  "description": "A PHP implementation to parse the CodeKit language.",
-  "keywords": ["CodeKit", "PHP wrapper"],
-  "homepage": "http://github.com/aklump/codekit_php",
+  "description": "PHP classes for compiling the Kit Language by Bryan Jones.",
+  "keywords": ["CodeKit", "The Kit Language"],
+  "homepage": "http://github.com/aklump/kit_php",
   "license": "BSD-3-Clause",
   "authors": [
     {

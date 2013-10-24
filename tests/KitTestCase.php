@@ -3,14 +3,14 @@
  * @file
  * Tests for the CodeKitTestCase class
  *
- * @ingroup codekit_php
+ * @ingroup kit_php
  * @{
  */
-class CodeKitTestCaseTest extends PHPUnit_Framework_TestCase {
+class KitTestCaseTest extends PHPUnit_Framework_TestCase {
   protected $paths;
 
   protected function getTempDir() {
-    return sys_get_temp_dir() . '/com.aklump.codekit_php';
+    return sys_get_temp_dir() . '/com.aklump.kit_php';
   }
 
   /**
@@ -66,4 +66,4 @@ class CodeKitTestCaseTest extends PHPUnit_Framework_TestCase {
   }
 }
 
-/** @} */ //end of group: codekit_php
+/** @} */ //end of group: kit_php

@@ -3,15 +3,15 @@
  * @file
  * The Variables class
  *
- * @ingroup codekit_php
+ * @ingroup kit_php
  * @{
  */
-namespace aklump\codekit_php;
+namespace aklump\kit_php;
 
 /**
  * Interface VariablesInterface
  */
-interface VariablesInterface extends CodeKitInterface {
+interface VariablesInterface extends KitInterface {
 
   /**
    * Extract variables from kit code
@@ -43,7 +43,7 @@ interface VariablesInterface extends CodeKitInterface {
 /**
  * Class Variables
  */
-class Variables extends CodeKit implements VariablesInterface {
+class Variables extends Kit implements VariablesInterface {
 
   protected $variables, $declarations;
 
@@ -119,4 +119,4 @@ class Variables extends CodeKit implements VariablesInterface {
 
 
 
-/** @} */ //end of group: codekit_php
+/** @} */ //end of group: kit_php

@@ -3,16 +3,16 @@
  * @file
  * Tests for the Variables class
  *
- * @ingroup codekit_php
+ * @ingroup kit_php
  * @{
  */
 require_once '../vendor/autoload.php';
-require_once 'CodeKitTestCase.php';
-require_once '../classes/CodeKit.php';
+require_once 'KitTestCase.php';
+require_once '../classes/Kit.php';
 require_once '../classes/Variables.php';
-use aklump\codekit_php\Variables;
+use aklump\kit_php\Variables;
 
-class VariablesTest extends CodeKitTestCaseTest {
+class VariablesTest extends KitTestCaseTest {
   public function testExtract() {
     $obj = new Variables;
 
@@ -52,7 +52,7 @@ class VariablesTest extends CodeKitTestCaseTest {
       'classes' => 'front one-sidebar bg-blue',
     );
     $return = $obj->setVars($subject);
-    $this->assertInstanceOf('aklump\codekit_php\Variables', $return);
+    $this->assertInstanceOf('aklump\kit_php\Variables', $return);
     $this->assertEquals($subject, $obj->getVars());
 
     $obj->setSource('testing <!--@title--> replacement with at sign');
@@ -71,7 +71,7 @@ class VariablesTest extends CodeKitTestCaseTest {
 <body class="<!--\$classes-->">
 EOD;
     $return = $obj->setSource($subject);
-    $this->assertInstanceOf('aklump\codekit_php\Variables', $return);
+    $this->assertInstanceOf('aklump\kit_php\Variables', $return);
     $this->assertEquals($subject, $obj->getSource());
 
     $control = <<<EOD
@@ -117,4 +117,4 @@ EOD;
 
 
 
-/** @} */ //end of group: codekit_php
+/** @} */ //end of group: kit_php
