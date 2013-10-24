@@ -1,7 +1,7 @@
 {
   "name": "aklump/kit_php",
   "type": "library",
-  "description": "PHP classes for compiling the Kit Language by Bryan Jones.",
+  "description": "PHP classes for compiling CodeKit's Kit Language (for HTML).",
   "keywords": ["CodeKit", "The Kit Language"],
   "homepage": "http://github.com/aklump/kit_php",
   "license": "BSD-3-Clause",
