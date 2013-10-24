@@ -9,13 +9,13 @@
 require_once '../vendor/autoload.php';
 require_once 'CodeKitTestCase.php';
 require_once '../classes/CodeKit.php';
+require_once '../classes/Imports.php';
 require_once '../classes/Compiler.php';
 use aklump\codekit_php\Compiler;
 
 class CompilerTest extends CodeKitTestCaseTest {
 
   public function testDirectories() {
-
     $this->paths[] = $source = $this->getTempDir() . '/ck_source';
     $this->paths[] = $output = $this->getTempDir() . '/ck_output';
     $obj = new Compiler($source, $output);
@@ -61,7 +61,6 @@ class CompilerTest extends CodeKitTestCaseTest {
     $obj->setOutputDirectory($dir);
     $this->assertEquals($dir, $obj->getOutputDirectory());
     $this->assertFileExists($dir);
-
   }
 
   public function testApply() {
@@ -97,7 +96,11 @@ EOD;
     $this->writeFile('', 'bogus.html', $this->paths['source']);
 
     // Extract the files
-    $control = array('body.kit', 'content.kit', 'page.kit');
+    $control = array(
+      'body.kit'    => $this->paths['source'] . '/body.kit',
+      'content.kit' => $this->paths['source'] . '/content.kit',
+      'page.kit'    => $this->paths['source'] . '/page.kit',
+    );
     $this->assertEquals($control, $obj->getKitFiles());
 
     // Apply and check result
@@ -121,7 +124,42 @@ EOD;
     }
     $this->assertEmpty($orphans);
 
+    // Make sure the output files have .html extensions not .kit
+    $files = scandir($this->paths['output']);
+    $control = array('.', '..', 'page.html');
+    $this->assertEquals($control, $files);
+  }
 
+  public function testRelativeDirs() {
+    // Create three files in different dirs
+    $index = $this->writeFile('<index><!-- @include ../core/tpl/header.kit --></index>', 'index.kit', 'kit');
+    $header = $this->writeFile('<header><!-- @include nav.kit --></header>', 'header.kit', 'core/tpl');
+    $nav = $this->writeFile('<nav>Here is the Navigation</nav>', 'nav.kit', 'core/tpl');
+
+    $obj = new Compiler($this->getTempDir() . '/kit', $this->getTempDir() . '/public_html');
+    $obj->apply();
+    $this->assertEquals('<index><header><nav>Here is the Navigation</nav></header></index>', $obj->apply());
+  }
+
+  public function testKitFilesInNestedDirs() {
+    $this->writeFile('great-grandfather', 'great-grandfather.kit', 'nested');
+    $this->writeFile('great-grandmother', 'great-grandmother.kit', 'nested');
+    $this->writeFile('grandfather', 'grandfather.kit', 'nested/grandfather');
+    $this->writeFile('father', 'father.kit', 'nested/grandfather/father');
+    $this->writeFile('son', 'son.kit', 'nested/grandfather/father/children');
+    $this->writeFile('daughter', 'daughter.kit', 'nested/grandfather/father/children');
+
+    $control = array(
+      'great-grandfather.kit'   => $this->getTempDir() . '/nested/great-grandfather.kit',
+      'great-grandmother.kit'   => $this->getTempDir() . '/nested/great-grandmother.kit',
+      'grandfather.kit'         => $this->getTempDir() . '/nested/grandfather/grandfather.kit',
+      'father.kit'              => $this->getTempDir() . '/nested/grandfather/father/father.kit',
+      'son.kit'                 => $this->getTempDir() . '/nested/grandfather/father/children/son.kit',
+      'daughter.kit'            => $this->getTempDir() . '/nested/grandfather/father/children/daughter.kit',
+    );
+
+    $obj = new Compiler($this->getTempDir() . '/nested', $this->getTempDir() . '/public_html');
+    $this->assertEquals($control, $obj->getKitFiles());
   }
 }
 

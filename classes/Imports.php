@@ -42,7 +42,7 @@ interface ImportsInterface extends CodeKitInterface {
  * Class Imports
  */
 class Imports extends CodeKit implements ImportsInterface {
-  protected $dirname, $imports;
+  protected $dirname, $imports, $result;
 
   /**
    * Constructor
@@ -62,26 +62,87 @@ class Imports extends CodeKit implements ImportsInterface {
     $this->imports = array();
   }
 
-  public function apply() {
-    $result = $this->source;
-    if (!preg_match_all('/<!--\s*(?:@import|@include) "?([^"]*?)"?\s*-->/', $this->source, $matches)) {
-      return $result;
-    }
-    foreach (array_unique($matches[1]) as $key => $paths) {
-      $paths = explode(',', $paths);
-      $replace = '';
-      foreach ($paths as $path) {
-        $path = trim($path);
-        $this->imports[$path] = $path;
-        $path = $this->dirname . '/' . $path;
-        if (is_readable($path) && ($contents = file_get_contents($path))) {
-          $replace .= $contents;
-        }
+  /**
+   * Extract all import declarations from a string
+   *
+   * @param string $string
+   *
+   * @return array
+   */
+  public function extract($string) {
+    preg_match_all('/<!--\s*(?:@import|@include) [\'"]*([^"]*?)[\'"]*\s*-->/', $string, $matches);
+    $extracted = array();
+    foreach (array_keys($matches[0]) as $key) {
+      $files = explode(', ', $matches[1][$key]);
+      foreach (array_keys($files) as $file_key) {
+        $files[$file_key] = trim($files[$file_key], ', ');
       }
-      $result = str_replace($matches[0][$key], $replace, $result);
+      $extracted[$matches[0][$key]] = $files;
     }
 
-    return $result;
+    return $extracted;
+  }
+
+  public function apply() {
+    $this->result = $this->source;
+
+    return $this->_apply($this->source);
+  }
+
+  /**
+   * Recursively apply import files and return the compiled result
+   *
+   * @param string $source
+   *   The source code to parse/compile.
+   * @param string $relative_dir
+   *   (Optional) Defaults to NULL. Used by the recursion to track relative
+       directories to the parent file.
+   *
+   * @return string
+   *   The fully compiled string.
+   */
+  protected function _apply($source, $relative_dir = NULL) {
+
+    // There are imports to load and include
+    if ($matches = $this->extract($source)) {
+      foreach ($matches as $find => $array) {
+
+        // Add this list of imports to our running list
+        $this->imports += array_combine($array, $array);
+
+        $replace = '';
+        foreach ($array as $path) {
+          $info = pathinfo($path);
+          $partial = '_' . ltrim($info['basename'], '_');
+          $variants = array(
+            $this->dirname . '/' . $path,
+            str_replace($info['basename'], $partial, $this->dirname . '/' . $path),
+            $this->dirname . '/' . $relative_dir . '/' . $path,
+            str_replace($info['basename'], $partial, $this->dirname . '/' . $relative_dir . '/' . $path),
+            $path,
+            str_replace($info['basename'], $partial, $path),
+            $info['basename'],
+            $partial,
+          );
+          $variants = array_unique($variants);
+          foreach ($variants as $path) {
+            if (is_readable($path) && ($contents = file_get_contents($path))) {
+              $replace .= $contents;
+              break;
+            }
+          }
+        }
+        $this->result = str_replace($find, $replace, $this->result);
+      }
+
+      // Test to see if we have any more includes, if so process
+      if ($this->extract($this->result)) {
+        $this->_apply($this->result, $info['dirname']);
+      }
+    }
+
+    // End of the line, no more imports, we're done
+    return $this->result;
   }
 
   public function getDirname() {

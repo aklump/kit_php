@@ -13,6 +13,22 @@ require_once '../classes/Imports.php';
 use aklump\codekit_php\Imports;
 
 class ImportsTest extends CodeKitTestCaseTest {
+  public function testExtract() {
+    $variants = array(
+      array('<!-- @import "someFile.kit" -->', 'someFile.kit'),
+      array('<!-- @import "file.html" -->', 'file.html'),
+      array('<!-- @include someFile.kit -->', 'someFile.kit'),
+      array("<!-- @import '../../someFileAtRelativePath.html' -->", '../../someFileAtRelativePath.html'),
+      array('<!--@include no_spaces_at_beginning_or_end.txt-->', 'no_spaces_at_beginning_or_end.txt'),
+      array('<!-- @import someFile, otherFile.html, ../thirdFile.kit -->', 'someFile', 'otherFile.html', '../thirdFile.kit'),
+    );
+    $obj = new Imports();
+    foreach ($variants as $array) {
+      $key = array_shift($array);
+      $this->assertEquals(array($key => $array), $obj->extract($key));
+    }
+  }
+
   public function testImport() {
     // Multiple files
     $subject = array('do', 're', 'mi');

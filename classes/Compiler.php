@@ -21,6 +21,8 @@ interface CompilerInterface extends CodeKitInterface {
    * Return all .kit files in the source dir
    *
    * @return array
+   *   keys are the filenames
+   *   values are the complete paths
    */
   public function getKitFiles();
 }
@@ -30,7 +32,7 @@ interface CompilerInterface extends CodeKitInterface {
  */
 class Compiler extends CodeKit implements CompilerInterface {
 
-  private $source_dir, $output_dir;
+  protected $source_dir, $output_dir, $imports, $kit_files;
 
   /**
    * Constructor
@@ -41,11 +43,10 @@ class Compiler extends CodeKit implements CompilerInterface {
   public function __construct($source_dir = NULL, $output_dir = NULL) {
     $this->setSourceDirectory($source_dir);
     $this->setOutputDirectory($output_dir);
+    $this->imports = array();
   }
 
   public function __destruct() {
-    //@todo remove
-    //return;
     // Replace all the kit files with their originals
     if ($this->source_dir) {
       $files = scandir($this->source_dir);
@@ -79,6 +80,10 @@ class Compiler extends CodeKit implements CompilerInterface {
    */
   protected function writeFile($contents, $file, $destination = 'output') {
     $dir = $destination === 'source' ? $this->source_dir : $this->output_dir;
+
+    if (strpos($file, $dir) === 0) {
+      $file = trim(substr($file, strlen($dir)), '/');
+    }
 
     // Make an orig backup
     if ($destination === 'source' && !file_exists($dir . '/' . $file . '.orig')) {
@@ -114,34 +119,55 @@ class Compiler extends CodeKit implements CompilerInterface {
     return $this->output_dir;
   }
 
-  public function getKitFiles() {
-    $files = scandir($this->source_dir);
+  /**
+   * Recursively scan a directory for .kit files
+   *
+   * @param string $dir
+   */
+  public function _getKitFiles($dir) {
+    $files = scandir($dir);
     foreach ($files as $key => $file) {
-      if (!preg_match('/\.kit$/', $file)) {
-        unset($files[$key]);
+      if ($file === '.' || $file === '..') {
+        continue;
+      }
+      $path = $dir . '/' . $file;
+      if (is_dir($path)) {
+        $this->_getKitFiles($path);
+      }
+      elseif (preg_match('/\.kit$/', $file)) {
+        $this->kit_files[$file] = $dir . '/' . $file;
       }
     }
+  }
 
-    return array_values($files);
+  public function getKitFiles() {
+    $this->kit_files = array();
+    $this->_getKitFiles($this->source_dir);
+
+    return $this->kit_files;
   }
 
   public function apply() {
-    $imports = array();
-
     if ($files = $this->getKitFiles()) {
-      foreach ($files as $file) {
-        $import = new Imports($this->source_dir . '/' . $file, TRUE);
+      foreach ($files as $file => $path) {
+        $import = new Imports($path);
+
+        // Make a backup of the file.
         $this->writeFile($import->getSource(), $file, 'source');
+
+        // Now store the compiled file
         $this->writeFile($import->apply(), $file, 'source');
-        $imports += $import->getImports();
+
+        $this->imports += $import->getImports();
       }
     }
 
-    $files = array_diff($files, $imports);
-    foreach ($files as $file) {
-      $variables = new Variables($this->source_dir . '/' . $file, TRUE);
+    $files = array_diff_key($files, $this->imports);
+    foreach ($files as $file => $path) {
+      $variables = new Variables($path, TRUE);
       $variables->extract();
       $result = $variables->apply();
+      $file = preg_replace('/\.kit$/', '.html', $file);
       $this->writeFile($result, $file);
     }
 

@@ -10,14 +10,35 @@ class CodeKitTestCaseTest extends PHPUnit_Framework_TestCase {
   protected $paths;
 
   protected function getTempDir() {
-    return sys_get_temp_dir() . '/com.aklump.codekit_php/';
+    return sys_get_temp_dir() . '/com.aklump.codekit_php';
   }
 
+  /**
+   * Write a string to a file
+   *
+   * @param string $contents
+   * @param string $file
+   *   Do not include the path in this argument
+   * @param string $dir
+   *   (Optional) Defaults to $this->getTempDir(). You may define a directory or
+       directories that will be created inside the temp dir.
+   *
+   * @return string
+   *   If the file is created the entire path to the file
+   */
   protected function writeFile($contents, $file, $dir = NULL) {
-    if ($dir === NULL) {
-      $dir = $this->getTempDir();
+
+    // Make sure the file is inside the temp dir
+    if ($dir && strpos($dir, $this->getTempDir()) === 0) {
+      $dir = substr($dir, strlen($this->getTempDir()));
     }
-    if (is_writable($dir) /*&& !is_file($dir . '/' . $file)*/) {
+    $dir = $this->getTempDir() . '/' . trim($dir, '/');
+
+    if (!is_dir($dir)) {
+      mkdir($dir, 0700, TRUE);
+    }
+
+    if (is_writable($dir)) {
       $fp = fopen($dir . '/' . $file, 'w');
       fwrite($fp, $contents);
       fclose($fp);
