@@ -32,7 +32,7 @@ interface CompilerInterface extends CodeKitInterface {
  */
 class Compiler extends CodeKit implements CompilerInterface {
 
-  protected $source_dir, $output_dir, $imports;
+  protected $source_dir, $output_dir, $imports, $kit_files;
 
   /**
    * Constructor
@@ -119,16 +119,32 @@ class Compiler extends CodeKit implements CompilerInterface {
     return $this->output_dir;
   }
 
-  public function getKitFiles() {
-    $files = scandir($this->source_dir);
-    $kit_files = array();
+  /**
+   * Recursively scan a directory for .kit files
+   *
+   * @param string $dir
+   */
+  public function _getKitFiles($dir) {
+    $files = scandir($dir);
     foreach ($files as $key => $file) {
-      if (preg_match('/\.kit$/', $file)) {
-        $kit_files[$file] = $this->source_dir . '/' . $file;
+      if ($file === '.' || $file === '..') {
+        continue;
+      }
+      $path = $dir . '/' . $file;
+      if (is_dir($path)) {
+        $this->_getKitFiles($path);
+      }
+      elseif (preg_match('/\.kit$/', $file)) {
+        $this->kit_files[$file] = $dir . '/' . $file;
       }
     }
+  }
 
-    return $kit_files;
+  public function getKitFiles() {
+    $this->kit_files = array();
+    $this->_getKitFiles($this->source_dir);
+
+    return $this->kit_files;
   }
 
   public function apply() {

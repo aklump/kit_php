@@ -49,7 +49,6 @@ class CodeKitTestCaseTest extends PHPUnit_Framework_TestCase {
   }
 
   function __destruct() {
-    return;
     // Delete all of our temporary files
     if (is_dir($this->getTempDir())) {
       $files = new RecursiveIteratorIterator(

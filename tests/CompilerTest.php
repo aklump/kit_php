@@ -16,7 +16,6 @@ use aklump\codekit_php\Compiler;
 class CompilerTest extends CodeKitTestCaseTest {
 
   public function testDirectories() {
-
     $this->paths[] = $source = $this->getTempDir() . '/ck_source';
     $this->paths[] = $output = $this->getTempDir() . '/ck_output';
     $obj = new Compiler($source, $output);
@@ -62,7 +61,6 @@ class CompilerTest extends CodeKitTestCaseTest {
     $obj->setOutputDirectory($dir);
     $this->assertEquals($dir, $obj->getOutputDirectory());
     $this->assertFileExists($dir);
-
   }
 
   public function testApply() {
@@ -141,6 +139,27 @@ EOD;
     $obj = new Compiler($this->getTempDir() . '/kit', $this->getTempDir() . '/public_html');
     $obj->apply();
     $this->assertEquals('<index><header><nav>Here is the Navigation</nav></header></index>', $obj->apply());
+  }
+
+  public function testKitFilesInNestedDirs() {
+    $this->writeFile('great-grandfather', 'great-grandfather.kit', 'nested');
+    $this->writeFile('great-grandmother', 'great-grandmother.kit', 'nested');
+    $this->writeFile('grandfather', 'grandfather.kit', 'nested/grandfather');
+    $this->writeFile('father', 'father.kit', 'nested/grandfather/father');
+    $this->writeFile('son', 'son.kit', 'nested/grandfather/father/children');
+    $this->writeFile('daughter', 'daughter.kit', 'nested/grandfather/father/children');
+
+    $control = array(
+      'great-grandfather.kit'   => $this->getTempDir() . '/nested/great-grandfather.kit',
+      'great-grandmother.kit'   => $this->getTempDir() . '/nested/great-grandmother.kit',
+      'grandfather.kit'         => $this->getTempDir() . '/nested/grandfather/grandfather.kit',
+      'father.kit'              => $this->getTempDir() . '/nested/grandfather/father/father.kit',
+      'son.kit'                 => $this->getTempDir() . '/nested/grandfather/father/children/son.kit',
+      'daughter.kit'            => $this->getTempDir() . '/nested/grandfather/father/children/daughter.kit',
+    );
+
+    $obj = new Compiler($this->getTempDir() . '/nested', $this->getTempDir() . '/public_html');
+    $this->assertEquals($control, $obj->getKitFiles());
   }
 }
 
