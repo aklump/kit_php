@@ -1,5 +1,5 @@
 ## Summary
-A PHP implementation to parse [the Kit language](http://incident57.com/codekit/kit.php) by Bryan Jones.
+A PHP implementation to parse CodeKit's [Kit language by Bryan Jones](http://incident57.com/codekit/kit.php) .
 
 ## Usage
 To compile all `.kit` files in a directory, use the following snippet of code as a starting point.  Refer to the class documentation for more info.  The first argument is the source directory to look for `.kit` files and the second argument is the output directory.
